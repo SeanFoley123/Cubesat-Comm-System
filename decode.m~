@@ -34,8 +34,8 @@ binary = CT2DT(originalsignal, Fs);
 
 %Decoding back to words
 message = '';
-for a=1:8:length(binary)
-    message = strcat(message, BitsToStrings(binary(a:a+8)));
+for i=1:8:length(binary)
+    message = strcat(message, BitsToStrings(binary(i:i+8)));
 end    
 disp(message);
 
@@ -85,9 +85,9 @@ end
 
 function tend = find_end(signal, ~)    %Finds the time when the cos wave is first heard.
     cutoff = .003;                         %Amplitude where we decide it's a new signal! Woohoo!
-    for k = length(signal):-1:1
-        if signal(k) > cutoff && k < 50000
-            tend = k;
+    for i = length(signal):-1:1
+        if signal(i) > cutoff && i < 50000
+            tend = i;
             break
         end
 
@@ -122,22 +122,22 @@ filtered = high_pass(low_passed, freq - 50, params);
 
 end
 
-function res = cosfunction(transmission, params)
-    Omega = params(1)*(2*pi)/params(2);                  %Convert Hz to radians/sample
-    n = 1:length(transmission);                   %Cos signal lasts length of data signal, wich is #bits*16 seconds
-    wc = cos(Omega*n);
+    function res = cosfunction(
+        Omega = 600*(2*pi)/Fs;                  %Convert Hz to radians/sample
+n = 1:length(transmission);                   %Cos signal lasts length of data signal, wich is #bits*16 seconds
+wc = cos(Omega*n);
 
-    res = wc' .* transmission;
-end
+doublecosine = wc' .* transmission;
+    end
 
 function res = CT2DT(signal, Fs)
     signallength = length(signal);
     DT = zeros([1 (signallength/(Fs/16))]);
-    for j=1:(Fs/16):length(signal)
-        if signal(j) == 1
-            DT(j) = 0;
+    for i=1:(Fs/16):length(originalsignal)
+        if originalsignal(i) == 1
+            DT(i) = 0;
         else
-            DT(j) = 1;
+            DT(i) = 1;
         end
     end
     
