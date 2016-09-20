@@ -21,10 +21,8 @@ result = wc .* CTBits;
 
 sound(result, Fs);
 
-plot(result)
-
-% x = linspace(-pi,pi, length(result));
-% plot(x, fftshift(abs(fft(result))));
+x = linspace(-pi,pi, length(result));
+plot(x, fftshift(abs(fft(result))));
 end
 
 function res = StringToBits(string)        %Convert each ascii letter into an 8bit binary string, then stick them together
@@ -44,9 +42,9 @@ function res = DT2CT(binary, Fs)
     for k=1:length(CT)
         if CT_count <= Fs/16
             if binary(binary_count) == '0';
-                CT(k) = 1;
+                CT(k) = -1;
             else
-                CT(k) = 2;
+                CT(k) = 1;
             end
             CT_count = CT_count + 1;
         else
