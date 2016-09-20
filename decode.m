@@ -1,4 +1,7 @@
-function message = decode           %Returns the message
+%%%%Modem Receiver
+
+function decode
+
 carrier = 600;                      %Hz
 Fs = 16384;                          %Samples/second
 lTx = .0625;                          %Length of each transmission in seconds
@@ -11,7 +14,9 @@ subplot(211)
 plot(abs(fftshift(fft(signal))))
 subplot(212)
 plot(abs(fftshift(fft(bandpassed))))
-end
+
+
+
 
 function res = RecordSound(time, params)
 recObj = audiorecorder(params(2), 8, 1);
@@ -26,7 +31,7 @@ function t0 = find_start(signal, params)    %Finds the time when the cos wave is
 cutoff = .1;                         %Amplitude where we decide it's a new signal! Woohoo!
 for i = 1:length(signal)
     if signal(i) > cutoff
-        t0 = i
+        t0 = i;
         break
     end
 end
@@ -52,4 +57,7 @@ end
 function filtered = band_pass(signal, freq, params)     %Returns a bandpasses signal w/passband of 40 Hz
 low_passed = low_pass(signal, freq + 20, params);
 filtered = high_pass(low_passed, freq - 20, params);
+end
+
+
 end
