@@ -3,18 +3,30 @@ function message = decode           %Returns the message
     Fs = 16384;                          %Samples/second
     lTx = .0625;                          %Length of each transmission in seconds
     params = [carrier, Fs, lTx];
-    signal = RecordSound(5, params);
-    max(signal)
+    signal = wgn(5000, 1, 0);
+%     signal = RecordSound(5, params);
     bandpassed = band_pass(signal, carrier, params);   %Used to find start of signal, then discarded
-    max(bandpassed)
-    t0 = find_start(bandpassed, params);  %Find the point where the actual transmission begins
+%     t0 = find_start(bandpassed, params);  %Find the point where the actual transmission begins
+%     [b, a] = butter(10, 600, 'bandpass');
+%     DataOut = filter(b, a, signal);
+%     d = fdesign.bandpass('N,F3dB1,F3dB2', 10, 500, 700);
+%     Hd = design(d, 'FIR');
+%     freqz(Hd)
     f1 = linspace(-pi, pi, length(signal));
     f2 = linspace(-pi, pi, length(bandpassed));
     subplot(211)
     plot(f1, abs(fftshift(fft(signal))))
     subplot(212)
     plot(f2, abs(fftshift(fft(bandpassed))))
-    axis([-.3, .3, 0, inf])
+    figure
+    subplot(211)
+    plot(signal)
+    subplot(212)
+    plot(bandpassed)
+    sound(signal, Fs)
+    pause(1.5)
+    sound(2*bandpassed, Fs)
+%     axis([-.3, .3, 0, inf])
 end
 
 function res = RecordSound(time, params)
