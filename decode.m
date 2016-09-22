@@ -1,11 +1,14 @@
 %%%%Modem Receiver
 function decode
+close all
+% about_how_long = 15;
 carrier = 600;                      %Hz
 Fs = 16384;                          %Samples/second
 lTx = .0625;                          %Length of each transmission in seconds
 params = [carrier, Fs, lTx];
-signal = RecordSound(5, params);
+signal = RecordSound(6, params);
 plot(signal)
+figure
 max(signal)
 
 %Used to find start of signal, then discarded
@@ -22,37 +25,32 @@ disp(tend);
 
 %Cut off at the starting and stopping points of message
 transmission = signal(t0:tend);  
-
+plot(transmission)
 %Cosine Function
 doublecosine = cosfunction(transmission, params);
+figure
+plot(doublecosine)
 
 %Low Pass to find Original Signal
 originalsignal = low_pass(doublecosine, carrier, params);
+% 
+figure
+plot(originalsignal)
 
 %Now to convert back to binary bits
-binary = CT2DT(originalsignal, Fs);
+binary = CT2DT(originalsignal, params);
+
+for i = 1:8:length(binary)-7
+    disp(binary(i:i+7))
+end
+disp(length(binary))
 
 %Decoding back to words
 message = '';
-for a=1:8:length(binary)
-    message = strcat(message, BitsToStrings(binary(a:a+8)));
+for a=1:8:length(binary)-7
+    message = strcat(message, BitsToStrings(binary(a:a+7)));
 end    
 disp(message);
-
-%Plotting
-f1 = linspace(1, length(signal), length(signal));
-f2 = linspace(1, length(bandpassed), length(bandpassed));
-
-subplot(2,1,1)
-% plot(f1, abs(fftshift(fft(signal))))
-plot(f1, signal);
-
-% axis([-.9, .9, 0, inf])
-subplot(2,1,2)
-% plot(f2, abs(fftshift(fft(bandpassed))))
-plot(f2, bandpassed);
-
-% axis([-.9, .9, 0, inf])
 end
 
 %Functions
@@ -68,7 +66,7 @@ end
 
 
 function t0 = find_start(signal, ~)    %Finds the time when the cos wave is first heard.
-    cutoff = .003;                         %Amplitude where we decide it's a new signal! Woohoo!
+    cutoff = .03;                         %Amplitude where we decide it's a new signal! Woohoo!
     for i = 1:length(signal)
         if signal(i) > cutoff && i > 500
             t0 = i;
@@ -80,9 +78,9 @@ end
 
 
 function tend = find_end(signal, ~)    %Finds the time when the cos wave is first heard.
-    cutoff = .003;                         %Amplitude where we decide it's a new signal! Woohoo!
+    cutoff = .03;                         %Amplitude where we decide it's a new signal! Woohoo!
     for k = length(signal):-1:1
-        if signal(k) > cutoff && k < 50000
+        if signal(k) > cutoff && k < 500000
             tend = k;
             break
         end
@@ -130,18 +128,16 @@ function res = cosfunction(transmission, params)
 end
 
 
-function res = CT2DT(signal, Fs)
-    signallength = length(signal);
-    DT = zeros([1 (signallength/(Fs/16))]);
-    for j=1:(Fs/16):length(signal)
-        if signal(j) == 1
-            DT(j) = 0;
-        else
-            DT(j) = 1;
-        end
+function bits = CT2DT(signal, params)
+    signal_length = length(signal);
+    length_bit = params(2)*params(3);
+    current_samp = length_bit/2;
+    bits = [];
+    while current_samp < signal_length
+        average = mean(signal(current_samp - length_bit/4:current_samp - length_bit/4));
+        bits = [bits, average<0];
+        current_samp = current_samp + length_bit;
     end
-    
-    res = DT;
 end
 
 
