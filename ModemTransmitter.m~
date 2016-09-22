@@ -16,11 +16,12 @@ word = input('please enter a word\n\n','s');
 
 %Converts from word to binary bits
 binary = StringToBits(word);
-
 for i=1:8:length(binary)-7
 disp(binary(i:i+7));
 end
 disp(length(binary));
+
+binary = [00000001, binary];
 
 %Convert from binary function to a "continuous" signal
 CTBits = DT2CT(binary, Fs);
