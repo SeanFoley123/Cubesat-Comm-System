@@ -40,9 +40,7 @@ plot(originalsignal)
 %Now to convert back to binary bits
 binary = CT2DT(originalsignal, params);
 
-for i = 1:8:length(binary)-7
-    disp(binary(i:i+7))
-end
+disp(mat2str(binary))
 disp(length(binary))
 
 %Decoding back to words
