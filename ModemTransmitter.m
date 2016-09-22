@@ -21,6 +21,7 @@ disp(binary);
 
 %Convert from binary function to a "continuous" signal
 CTBits = DT2CT(binary, Fs);
+plot(CTBits)
 
 %Cosine Function
 result = cosfunction(CTBits, params);
@@ -32,7 +33,7 @@ sound(result, Fs);
 
 %Plotting
 
-plot(result)
+% plot(result)
 
 % x = linspace(-pi,pi, length(result));
 % plot(x, fftshift(abs(fft(result))));

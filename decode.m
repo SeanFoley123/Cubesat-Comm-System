@@ -5,6 +5,7 @@ Fs = 16384;                          %Samples/second
 lTx = .0625;                          %Length of each transmission in seconds
 params = [carrier, Fs, lTx];
 signal = RecordSound(5, params);
+plot(signal)
 max(signal)
 
 %Used to find start of signal, then discarded
@@ -20,7 +21,7 @@ tend = find_end(bandpassed, params);
 disp(tend);
 
 %Cut off at the starting and stopping points of message
-transmission = bandpassed(t0:tend);  
+transmission = signal(t0:tend);  
 
 %Cosine Function
 doublecosine = cosfunction(transmission, params);
@@ -37,10 +38,6 @@ for a=1:8:length(binary)
     message = strcat(message, BitsToStrings(binary(a:a+8)));
 end    
 disp(message);
-
-    
-
-
 
 %Plotting
 f1 = linspace(1, length(signal), length(signal));
